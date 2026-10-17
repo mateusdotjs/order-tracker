@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.api.orders.exceptions.OrderNotFoundException;
+import com.example.api.users.exceptions.EmailAlreadyUsedException;
+import com.example.api.users.exceptions.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,6 +33,18 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(OrderNotFoundException.class)
 	public ResponseEntity<Map<String, String>> handleOrderNotFound(OrderNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body(Map.of("message", ex.getMessage()));
+	}
+
+	@ExceptionHandler(EmailAlreadyUsedException.class)
+	public ResponseEntity<Map<String, String>> handleEmailAlreadyUsed(EmailAlreadyUsedException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(Map.of("message", ex.getMessage()));
+	}
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(Map.of("message", ex.getMessage()));
 	}
