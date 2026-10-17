@@ -1,6 +1,9 @@
 # API (Spring / Maven)
 HELP.md
 target/
+api/.env
+api/.env.*
+!api/.env.example
 **/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -35,6 +38,10 @@ build/
 !**/.vscode/extensions.json
 
 # Frontend (React / Vite)
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
 logs
 *.log
 npm-debug.log*
