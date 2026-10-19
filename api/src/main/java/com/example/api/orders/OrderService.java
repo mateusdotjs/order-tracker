@@ -9,25 +9,31 @@ import com.example.api.orders.dto.CreateOrderRequest;
 import com.example.api.orders.dto.OrderResponse;
 import com.example.api.orders.dto.UpdateStatusRequest;
 import com.example.api.orders.exceptions.OrderNotFoundException;
+import com.example.api.users.User;
+import com.example.api.users.UserRepository;
 
 @Service
 public class OrderService {
 
 	private final OrderRepository orderRepository;
+	private final UserRepository userRepository;
 
-	public OrderService(OrderRepository orderRepository) {
+	public OrderService(OrderRepository orderRepository, UserRepository userRepository) {
 		this.orderRepository = orderRepository;
+		this.userRepository = userRepository;
 	}
 
 	@Transactional
-	public OrderResponse create(CreateOrderRequest request) {
+	public OrderResponse create(CreateOrderRequest request, Long ownerId) {
+		User owner = userRepository.getReferenceById(ownerId);
+
 		Address address = new Address(
 				request.address().street(),
 				request.address().number(),
 				request.address().city(),
 				request.address().zip());
 
-		Order order = new Order(request.customerName(), address);
+		Order order = new Order(request.customerName(), address, owner);
 		for (CreateOrderRequest.Item item : request.items()) {
 			order.addItem(new OrderItem(item.name(), item.quantity(), item.price()));
 		}
@@ -36,26 +42,26 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<OrderResponse> findAll() {
-		return orderRepository.findAll().stream()
+	public List<OrderResponse> findAll(Long ownerId) {
+		return orderRepository.findAllByOwnerId(ownerId).stream()
 				.map(this::toResponse)
 				.toList();
 	}
 
 	@Transactional(readOnly = true)
-	public OrderResponse findById(Long id) {
-		return toResponse(getOrderOrThrow(id));
+	public OrderResponse findById(Long id, Long ownerId) {
+		return toResponse(getOrderOrThrow(id, ownerId));
 	}
 
 	@Transactional
-	public OrderResponse updateStatus(Long id, UpdateStatusRequest request) {
-		Order order = getOrderOrThrow(id);
+	public OrderResponse updateStatus(Long id, UpdateStatusRequest request, Long ownerId) {
+		Order order = getOrderOrThrow(id, ownerId);
 		order.setStatus(request.status());
 		return toResponse(orderRepository.save(order));
 	}
 
-	private Order getOrderOrThrow(Long id) {
-		return orderRepository.findById(id)
+	private Order getOrderOrThrow(Long id, Long ownerId) {
+		return orderRepository.findByIdAndOwnerId(id, ownerId)
 				.orElseThrow(() -> new OrderNotFoundException(id));
 	}
 

@@ -8,11 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-	@Override
 	@EntityGraph(attributePaths = "items")
-	List<Order> findAll();
+	List<Order> findAllByOwnerId(Long ownerId);
 
-	@Override
 	@EntityGraph(attributePaths = "items")
-	Optional<Order> findById(Long id);
+	Optional<Order> findByIdAndOwnerId(Long id, Long ownerId);
 }

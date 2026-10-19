@@ -13,9 +13,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+
+import com.example.api.users.User;
 
 @Entity
 @Table(name = "orders")
@@ -24,6 +28,10 @@ public class Order {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "owner_id", nullable = false)
+	private User owner;
 
 	@Column(nullable = false)
 	private String customerName;
@@ -44,9 +52,10 @@ public class Order {
 	protected Order() {
 	}
 
-	public Order(String customerName, Address address) {
+	public Order(String customerName, Address address, User owner) {
 		this.customerName = customerName;
 		this.address = address;
+		this.owner = owner;
 	}
 
 	@PrePersist

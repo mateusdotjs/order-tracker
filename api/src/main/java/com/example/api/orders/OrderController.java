@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,25 +31,32 @@ public class OrderController {
 	}
 
 	@PostMapping
-	public ResponseEntity<OrderResponse> create(@Valid @RequestBody CreateOrderRequest request) {
-		OrderResponse response = orderService.create(request);
+	public ResponseEntity<OrderResponse> create(
+			@AuthenticationPrincipal Jwt jwt,
+			@Valid @RequestBody CreateOrderRequest request) {
+		Long ownerId = Long.parseLong(jwt.getSubject());
+		OrderResponse response = orderService.create(request, ownerId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@GetMapping
-	public List<OrderResponse> findAll() {
-		return orderService.findAll();
+	public List<OrderResponse> findAll(@AuthenticationPrincipal Jwt jwt) {
+		Long ownerId = Long.parseLong(jwt.getSubject());
+		return orderService.findAll(ownerId);
 	}
 
 	@GetMapping("/{id}")
-	public OrderResponse findById(@PathVariable Long id) {
-		return orderService.findById(id);
+	public OrderResponse findById(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id) {
+		Long ownerId = Long.parseLong(jwt.getSubject());
+		return orderService.findById(id, ownerId);
 	}
 
 	@PatchMapping("/{id}/status")
 	public OrderResponse updateStatus(
+			@AuthenticationPrincipal Jwt jwt,
 			@PathVariable Long id,
 			@Valid @RequestBody UpdateStatusRequest request) {
-		return orderService.updateStatus(id, request);
+		Long ownerId = Long.parseLong(jwt.getSubject());
+		return orderService.updateStatus(id, request, ownerId);
 	}
 }
