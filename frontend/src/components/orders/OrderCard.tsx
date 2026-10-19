@@ -1,6 +1,7 @@
+import { Link } from 'react-router'
+import { OrderStatusSelect } from './OrderStatusSelect'
 import { StatusBadge } from './StatusBadge'
 import {
-  ORDER_STATUSES,
   formatAddressShort,
   formatBRL,
   formatDatePtBr,
@@ -25,12 +26,22 @@ export function OrderCard({
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <header className="mb-3 space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <h2 className="min-w-0 flex-1 text-lg font-semibold text-gray-900">
-            Pedido de {order.customerName}
-          </h2>
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Pedido de {order.customerName}
+            </h2>
+            <span className="text-xs text-gray-400">
+              ID do pedido: #{order.id}
+            </span>
+          </div>
           <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
-            <span className="text-xs text-gray-400">ID do pedido: #{order.id}</span>
+            <Link
+              to={`/orders/${order.id}`}
+              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              Editar
+            </Link>
             <StatusBadge status={order.status} />
             <time
               dateTime={order.createdAt}
@@ -57,34 +68,13 @@ export function OrderCard({
         Total: {formatBRL(total)}
       </p>
 
-      <div>
-        <label
-          htmlFor={`status-${order.id}`}
-          className="mb-1 block text-sm text-gray-700"
-        >
-          Alterar status
-        </label>
-        <select
-          id={`status-${order.id}`}
-          value={order.status}
-          disabled={isUpdating}
-          onChange={(e) =>
-            onStatusChange(order.id, e.target.value as OrderStatus)
-          }
-          className="rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-        >
-          {ORDER_STATUSES.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-        {statusError ? (
-          <p className="mt-1 text-sm text-red-600" role="alert">
-            {statusError}
-          </p>
-        ) : null}
-      </div>
+      <OrderStatusSelect
+        orderId={order.id}
+        status={order.status}
+        disabled={isUpdating}
+        errorMessage={statusError}
+        onChange={onStatusChange}
+      />
     </article>
   )
 }

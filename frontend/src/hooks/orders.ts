@@ -2,12 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createOrder,
   fetchOrders,
+  getOrder,
   updateOrderStatus,
   type UpdateStatusArgs,
 } from '../api/orders'
 import type { CreateOrderPayload, Order } from '../types/orders'
 
 export const ordersQueryKey = ['orders'] as const
+
+export function orderQueryKey(id: number) {
+  return ['orders', id] as const
+}
 
 function sortOrdersNewestFirst(orders: Order[]): Order[] {
   return [...orders].sort(
@@ -20,6 +25,15 @@ export function useOrders() {
     queryKey: ordersQueryKey,
     queryFn: fetchOrders,
     select: sortOrdersNewestFirst,
+  })
+}
+
+export function useOrder(id: number | undefined, enabled: boolean) {
+  return useQuery({
+    queryKey: orderQueryKey(id!),
+    queryFn: () => getOrder(id!),
+    retry: false,
+    enabled: enabled && id != null,
   })
 }
 
@@ -40,8 +54,9 @@ export function useUpdateOrderStatus() {
   return useMutation({
     mutationFn: ({ id, status }: UpdateStatusArgs) =>
       updateOrderStatus(id, { status }),
-    onSuccess: () => {
+    onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ordersQueryKey })
+      queryClient.invalidateQueries({ queryKey: orderQueryKey(id) })
     },
   })
 }

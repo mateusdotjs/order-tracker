@@ -3,6 +3,7 @@ import { GuestRoute } from './components/auth/GuestRoute'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
 import { NewOrderPage } from './pages/NewOrderPage'
+import { OrderDetailPage } from './pages/OrderDetailPage'
 import { OrdersPage } from './pages/OrdersPage'
 import { RegisterPage } from './pages/RegisterPage'
 
@@ -38,6 +39,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <NewOrderPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders/:id"
+        element={
+          <ProtectedRoute>
+            <OrderDetailPage />
           </ProtectedRoute>
         }
       />

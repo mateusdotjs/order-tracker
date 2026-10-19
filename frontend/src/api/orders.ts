@@ -10,6 +10,10 @@ export function fetchOrders(): Promise<Order[]> {
   return request<Order[]>('/orders')
 }
 
+export function getOrder(id: number): Promise<Order> {
+  return request<Order>(`/orders/${id}`)
+}
+
 export function createOrder(payload: CreateOrderPayload): Promise<Order> {
   return request<Order>('/orders', {
     method: 'POST',
