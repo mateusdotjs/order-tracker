@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { ApiError } from '../../api/client'
+import { getErrorMessage } from '../../constants/errorMessages'
 import type { Order, OrderStatus } from '../../types/orders'
 import { OrderCard } from './OrderCard'
 
@@ -35,7 +36,7 @@ export function OrderList({
   } else if (isError) {
     const message =
       error instanceof ApiError
-        ? error.message
+        ? getErrorMessage(error.code)
         : 'Não foi possível carregar os pedidos.'
     listContent = (
       <p className="text-center text-red-600" role="alert">

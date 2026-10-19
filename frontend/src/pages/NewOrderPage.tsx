@@ -1,6 +1,8 @@
 import { useState, type SubmitEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { ApiError } from '../api/client'
+import { ApiError, NetworkError } from '../api/client'
+import { NETWORK_ERROR_MESSAGE } from '../constants/errorMessages'
+import type { ErrorCode, FieldErrorCode } from '../types/errors'
 import { FieldError } from '../components/FieldError'
 import { FormGeneralError } from '../components/FormGeneralError'
 import { AddressFields } from '../components/orders/AddressFields'
@@ -28,8 +30,15 @@ export function NewOrderPage() {
     zip: '',
   })
   const [items, setItems] = useState<FormItem[]>([newItem()])
-  const [generalError, setGeneralError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [generalErrorCode, setGeneralErrorCode] = useState<ErrorCode | null>(
+    null,
+  )
+  const [generalErrorFallback, setGeneralErrorFallback] = useState<
+    string | null
+  >(null)
+  const [fieldErrors, setFieldErrors] = useState<
+    Record<string, FieldErrorCode>
+  >({})
 
   const mutation = useCreateOrder()
 
@@ -69,7 +78,8 @@ export function NewOrderPage() {
 
   function handleSubmit(event: SubmitEvent): void {
     event.preventDefault()
-    setGeneralError(null)
+    setGeneralErrorCode(null)
+    setGeneralErrorFallback(null)
     setFieldErrors({})
 
     mutation.mutate(
@@ -88,14 +98,22 @@ export function NewOrderPage() {
         },
         onError: (error: Error) => {
           setFieldErrors({})
+          setGeneralErrorCode(null)
+          setGeneralErrorFallback(null)
           if (error instanceof ApiError) {
-            setGeneralError(error.message)
+            setGeneralErrorCode(error.code)
             if (error.errors) {
               setFieldErrors(error.errors)
             }
             return
           }
-          setGeneralError('Não foi possível criar o pedido. Tente novamente.')
+          if (error instanceof NetworkError) {
+            setGeneralErrorFallback(NETWORK_ERROR_MESSAGE)
+            return
+          }
+          setGeneralErrorFallback(
+            'Não foi possível criar o pedido. Tente novamente.',
+          )
         },
       },
     )
@@ -135,7 +153,7 @@ export function NewOrderPage() {
                 className={inputClass}
               />
               <FieldError
-                message={resolveFieldError(fieldErrors, 'customerName')}
+                code={resolveFieldError(fieldErrors, 'customerName')}
               />
             </div>
 
@@ -155,7 +173,10 @@ export function NewOrderPage() {
               onItemChange={updateItem}
             />
 
-            <FormGeneralError message={generalError} />
+            <FormGeneralError
+              code={generalErrorCode}
+              fallback={generalErrorFallback}
+            />
 
             <button
               type="submit"

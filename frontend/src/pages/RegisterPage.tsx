@@ -2,9 +2,11 @@ import { useMutation } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { register } from '../api/auth'
-import { ApiError } from '../api/client'
+import { ApiError, NetworkError } from '../api/client'
 import { RegisterForm } from '../components/auth/RegisterForm'
+import { NETWORK_ERROR_MESSAGE } from '../constants/errorMessages'
 import { withoutFieldErrors } from '../lib/fieldErrors'
+import type { ErrorCode, FieldErrorCode } from '../types/errors'
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -12,8 +14,15 @@ export function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [generalError, setGeneralError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [generalErrorCode, setGeneralErrorCode] = useState<ErrorCode | null>(
+    null,
+  )
+  const [generalErrorFallback, setGeneralErrorFallback] = useState<
+    string | null
+  >(null)
+  const [fieldErrors, setFieldErrors] = useState<
+    Record<string, FieldErrorCode>
+  >({})
 
   const mutation = useMutation({
     mutationFn: register,
@@ -27,20 +36,27 @@ export function RegisterPage() {
     },
     onError: (error: Error) => {
       setFieldErrors({})
+      setGeneralErrorCode(null)
+      setGeneralErrorFallback(null)
       if (error instanceof ApiError) {
-        setGeneralError(error.message)
+        setGeneralErrorCode(error.code)
         if (error.errors) {
           setFieldErrors(error.errors)
         }
         return
       }
-      setGeneralError('Não foi possível cadastrar. Tente novamente.')
+      if (error instanceof NetworkError) {
+        setGeneralErrorFallback(NETWORK_ERROR_MESSAGE)
+        return
+      }
+      setGeneralErrorFallback('Não foi possível cadastrar. Tente novamente.')
     },
   })
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setGeneralError(null)
+    setGeneralErrorCode(null)
+    setGeneralErrorFallback(null)
     setFieldErrors({})
     mutation.mutate({ name, email, password })
   }
@@ -65,7 +81,8 @@ export function RegisterPage() {
       name={name}
       email={email}
       password={password}
-      generalError={generalError}
+      generalErrorCode={generalErrorCode}
+      generalErrorFallback={generalErrorFallback}
       fieldErrors={fieldErrors}
       isPending={mutation.isPending}
       onNameChange={handleNameChange}

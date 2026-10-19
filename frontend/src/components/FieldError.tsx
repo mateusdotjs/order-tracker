@@ -1,18 +1,21 @@
+import { getFieldErrorMessage } from '../constants/errorMessages'
+import type { FieldErrorCode } from '../types/errors'
+
 type FieldErrorProps = {
-  message?: string | null
+  code?: FieldErrorCode | null
   className?: string
 }
 
 const defaultClassName = 'mt-1 text-sm text-red-600'
 
-export function FieldError({ message, className = defaultClassName }: FieldErrorProps) {
-  if (!message) {
+export function FieldError({ code, className = defaultClassName }: FieldErrorProps) {
+  if (!code) {
     return null
   }
 
   return (
     <p className={className} role="alert">
-      {message}
+      {getFieldErrorMessage(code)}
     </p>
   )
 }

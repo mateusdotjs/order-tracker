@@ -1,5 +1,6 @@
 import type { FormEvent } from 'react'
 import { Link } from 'react-router'
+import type { ErrorCode, FieldErrorCode } from '../../types/errors'
 import { FieldError } from '../FieldError'
 import { FormGeneralError } from '../FormGeneralError'
 
@@ -7,8 +8,9 @@ type RegisterFormProps = {
   name: string
   email: string
   password: string
-  generalError: string | null
-  fieldErrors: Record<string, string>
+  generalErrorCode: ErrorCode | null
+  generalErrorFallback: string | null
+  fieldErrors: Record<string, FieldErrorCode>
   isPending: boolean
   onNameChange: (value: string) => void
   onEmailChange: (value: string) => void
@@ -20,7 +22,8 @@ export function RegisterForm({
   name,
   email,
   password,
-  generalError,
+  generalErrorCode,
+  generalErrorFallback,
   fieldErrors,
   isPending,
   onNameChange,
@@ -49,7 +52,7 @@ export function RegisterForm({
               onChange={(e) => onNameChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <FieldError message={fieldErrors.name} />
+            <FieldError code={fieldErrors.name} />
           </div>
 
           <div>
@@ -65,7 +68,7 @@ export function RegisterForm({
               onChange={(e) => onEmailChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <FieldError message={fieldErrors.email} />
+            <FieldError code={fieldErrors.email} />
           </div>
 
           <div>
@@ -85,10 +88,13 @@ export function RegisterForm({
               onChange={(e) => onPasswordChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <FieldError message={fieldErrors.password} />
+            <FieldError code={fieldErrors.password} />
           </div>
 
-          <FormGeneralError message={generalError} />
+          <FormGeneralError
+            code={generalErrorCode}
+            fallback={generalErrorFallback}
+          />
 
           <button
             type="submit"

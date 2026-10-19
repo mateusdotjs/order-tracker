@@ -2,10 +2,12 @@ import { useMutation } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { login } from '../api/auth'
-import { ApiError } from '../api/client'
+import { ApiError, NetworkError } from '../api/client'
 import { LoginForm } from '../components/auth/LoginForm'
+import { NETWORK_ERROR_MESSAGE } from '../constants/errorMessages'
 import { useAuth } from '../context/AuthContext'
 import { withoutFieldErrors } from '../lib/fieldErrors'
+import type { ErrorCode, FieldErrorCode } from '../types/errors'
 
 type LocationState = {
   successMessage?: string
@@ -19,8 +21,15 @@ export function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [generalError, setGeneralError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [generalErrorCode, setGeneralErrorCode] = useState<ErrorCode | null>(
+    null,
+  )
+  const [generalErrorFallback, setGeneralErrorFallback] = useState<
+    string | null
+  >(null)
+  const [fieldErrors, setFieldErrors] = useState<
+    Record<string, FieldErrorCode>
+  >({})
 
   const mutation = useMutation({
     mutationFn: login,
@@ -30,20 +39,27 @@ export function LoginPage() {
     },
     onError: (error: Error) => {
       setFieldErrors({})
+      setGeneralErrorCode(null)
+      setGeneralErrorFallback(null)
       if (error instanceof ApiError) {
-        setGeneralError(error.message)
+        setGeneralErrorCode(error.code)
         if (error.errors) {
           setFieldErrors(error.errors)
         }
         return
       }
-      setGeneralError('Não foi possível entrar. Tente novamente.')
+      if (error instanceof NetworkError) {
+        setGeneralErrorFallback(NETWORK_ERROR_MESSAGE)
+        return
+      }
+      setGeneralErrorFallback('Não foi possível entrar. Tente novamente.')
     },
   })
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setGeneralError(null)
+    setGeneralErrorCode(null)
+    setGeneralErrorFallback(null)
     setFieldErrors({})
     mutation.mutate({ email, password })
   }
@@ -63,7 +79,8 @@ export function LoginPage() {
       email={email}
       password={password}
       successMessage={successMessage}
-      generalError={generalError}
+      generalErrorCode={generalErrorCode}
+      generalErrorFallback={generalErrorFallback}
       fieldErrors={fieldErrors}
       isPending={mutation.isPending}
       onEmailChange={handleEmailChange}

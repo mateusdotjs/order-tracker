@@ -1,7 +1,9 @@
+import type { FieldErrorCode } from '../types/errors'
+
 export function resolveFieldError(
-  errors: Record<string, string>,
+  errors: Record<string, FieldErrorCode>,
   ...keys: string[]
-): string | undefined {
+): FieldErrorCode | undefined {
   for (const key of keys) {
     if (errors[key]) {
       return errors[key]
@@ -11,9 +13,9 @@ export function resolveFieldError(
 }
 
 export function withoutFieldErrors(
-  errors: Record<string, string>,
+  errors: Record<string, FieldErrorCode>,
   ...keys: string[]
-): Record<string, string> {
+): Record<string, FieldErrorCode> {
   if (keys.length === 0) {
     return errors
   }

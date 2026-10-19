@@ -1,10 +1,11 @@
 import { FieldError } from '../FieldError'
 import { resolveFieldError } from '../../lib/fieldErrors'
+import type { FieldErrorCode } from '../../types/errors'
 import type { Address } from '../../types/orders'
 
 type AddressFieldsProps = {
   address: Address
-  fieldErrors: Record<string, string>
+  fieldErrors: Record<string, FieldErrorCode>
   inputClass: string
   onFieldChange: (field: keyof Address, value: string) => void
 }
@@ -33,7 +34,7 @@ export function AddressFields({
           className={inputClass}
         />
         <FieldError
-          message={resolveFieldError(fieldErrors, 'address.street')}
+          code={resolveFieldError(fieldErrors, 'address.street')}
         />
       </div>
       <div>
@@ -49,7 +50,7 @@ export function AddressFields({
           className={inputClass}
         />
         <FieldError
-          message={resolveFieldError(fieldErrors, 'address.number')}
+          code={resolveFieldError(fieldErrors, 'address.number')}
         />
       </div>
       <div>
@@ -64,7 +65,7 @@ export function AddressFields({
           onChange={(e) => updateAddressField('city', e.target.value)}
           className={inputClass}
         />
-        <FieldError message={resolveFieldError(fieldErrors, 'address.city')} />
+        <FieldError code={resolveFieldError(fieldErrors, 'address.city')} />
       </div>
       <div>
         <label htmlFor="zip" className="mb-1 block text-sm text-gray-700">
@@ -78,7 +79,7 @@ export function AddressFields({
           onChange={(e) => updateAddressField('zip', e.target.value)}
           className={inputClass}
         />
-        <FieldError message={resolveFieldError(fieldErrors, 'address.zip')} />
+        <FieldError code={resolveFieldError(fieldErrors, 'address.zip')} />
       </div>
     </fieldset>
   )

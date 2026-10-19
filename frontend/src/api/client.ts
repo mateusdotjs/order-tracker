@@ -1,19 +1,34 @@
+import { resolveErrorCode } from '../constants/errorMessages'
 import { readStoredToken } from '../context/tokenStorage'
-
-export type ApiErrorBody = {
-  message?: string
-  errors?: Record<string, string>
-}
+import {
+  parseFieldErrors,
+  type ApiErrorBody,
+  type ErrorCode,
+  type FieldErrorCode,
+} from '../types/errors'
 
 export class ApiError extends Error {
   status: number
-  errors?: Record<string, string>
+  code: ErrorCode | null
+  errors?: Record<string, FieldErrorCode>
 
-  constructor(message: string, status: number, errors?: Record<string, string>) {
-    super(message)
+  constructor(
+    status: number,
+    code: ErrorCode | null,
+    errors?: Record<string, FieldErrorCode>,
+  ) {
+    super('ApiError')
     this.name = 'ApiError'
     this.status = status
+    this.code = code
     this.errors = errors
+  }
+}
+
+export class NetworkError extends Error {
+  constructor() {
+    super('NetworkError')
+    this.name = 'NetworkError'
   }
 }
 
@@ -52,11 +67,16 @@ export async function request<T>(
 
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`
 
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
+  let res: Response
+  try {
+    res = await fetch(url, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    })
+  } catch {
+    throw new NetworkError()
+  }
 
   const text = await res.text()
   let data: unknown = {}
@@ -66,9 +86,9 @@ export async function request<T>(
       data = JSON.parse(text) as unknown
     } catch {
       if (!res.ok) {
-        throw new ApiError(text || 'Request failed', res.status)
+        throw new ApiError(res.status, resolveErrorCode(undefined, res.status))
       }
-      throw new ApiError('Invalid JSON response', res.status)
+      throw new ApiError(res.status, null)
     }
   }
 
@@ -78,9 +98,9 @@ export async function request<T>(
       onUnauthorized?.()
     }
     throw new ApiError(
-      errorBody.message ?? 'Request failed',
       res.status,
-      errorBody.errors,
+      resolveErrorCode(errorBody, res.status),
+      parseFieldErrors(errorBody.errors),
     )
   }
 

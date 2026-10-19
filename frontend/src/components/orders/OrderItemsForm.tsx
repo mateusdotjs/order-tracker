@@ -1,5 +1,6 @@
 import { FieldError } from '../FieldError'
 import { itemFieldErrorKeys, resolveFieldError } from '../../lib/fieldErrors'
+import type { FieldErrorCode } from '../../types/errors'
 
 export type FormItem = {
   clientKey: string
@@ -19,7 +20,7 @@ export function newItem(): FormItem {
 
 type OrderItemsFormProps = {
   items: FormItem[]
-  fieldErrors: Record<string, string>
+  fieldErrors: Record<string, FieldErrorCode>
   inputClass: string
   onAdd: () => void
   onRemove: (index: number) => void
@@ -51,7 +52,7 @@ export function OrderItemsForm({
         </button>
       </div>
       <FieldError
-        message={resolveFieldError(fieldErrors, 'items')}
+        code={resolveFieldError(fieldErrors, 'items')}
         className="mb-2 text-sm text-red-600"
       />
       <ul className="space-y-4">
@@ -91,7 +92,7 @@ export function OrderItemsForm({
                 className={inputClass}
               />
               <FieldError
-                message={resolveFieldError(
+                code={resolveFieldError(
                   fieldErrors,
                   ...itemFieldErrorKeys(index, 'name'),
                 )}
@@ -118,7 +119,7 @@ export function OrderItemsForm({
                   className={inputClass}
                 />
                 <FieldError
-                  message={resolveFieldError(
+                  code={resolveFieldError(
                     fieldErrors,
                     ...itemFieldErrorKeys(index, 'quantity'),
                   )}
@@ -144,7 +145,7 @@ export function OrderItemsForm({
                   className={inputClass}
                 />
                 <FieldError
-                  message={resolveFieldError(
+                  code={resolveFieldError(
                     fieldErrors,
                     ...itemFieldErrorKeys(index, 'price'),
                   )}

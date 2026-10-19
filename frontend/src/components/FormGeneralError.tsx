@@ -1,8 +1,15 @@
+import { getErrorMessage } from '../constants/errorMessages'
+import type { ErrorCode } from '../types/errors'
+
 type FormGeneralErrorProps = {
-  message?: string | null
+  code?: ErrorCode | null
+  fallback?: string | null
 }
 
-export function FormGeneralError({ message }: FormGeneralErrorProps) {
+export function FormGeneralError({ code, fallback }: FormGeneralErrorProps) {
+  const message =
+    code != null ? getErrorMessage(code) : fallback != null ? fallback : null
+
   if (!message) {
     return null
   }

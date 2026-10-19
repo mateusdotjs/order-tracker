@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { ApiError } from '../api/client'
+import { getErrorMessage } from '../constants/errorMessages'
 import { OrderList } from '../components/orders/OrderList'
 import { useAuth } from '../context/AuthContext'
 import { useOrders, useUpdateOrderStatus } from '../hooks/orders'
@@ -32,7 +33,7 @@ export function OrdersPage() {
           setUpdatingOrderId(null)
           const message =
             err instanceof ApiError
-              ? err.message
+              ? getErrorMessage(err.code)
               : 'Não foi possível atualizar o status.'
           setStatusErrorById((prev) => ({ ...prev, [orderId]: message }))
         },

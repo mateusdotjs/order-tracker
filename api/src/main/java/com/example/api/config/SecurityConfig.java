@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.example.api.common.ErrorCode;
 
 @Configuration
 @EnableWebSecurity
@@ -33,12 +34,17 @@ public class SecurityConfig {
 						.anyRequest().authenticated())
 				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
 				.exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
-					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					ErrorCode code = ErrorCode.UNAUTHENTICATED;
+					response.setStatus(code.getStatus().value());
 					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-					response.getWriter().write("{\"message\":\"Unauthorized\"}");
+					response.getWriter().write(unauthenticatedJson(code));
 				}));
 
 		return http.build();
+	}
+
+	private static String unauthenticatedJson(ErrorCode code) {
+		return "{\"code\":\"" + code.name() + "\",\"message\":\"" + code.getMessage() + "\"}";
 	}
 
 	@Bean
