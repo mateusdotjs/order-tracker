@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { OrderStatusSelect } from './OrderStatusSelect'
 import { StatusBadge } from './StatusBadge'
+import { truncateText } from '../../lib/truncateText'
 import {
   formatAddressShort,
   formatBRL,
@@ -9,6 +10,8 @@ import {
   type Order,
   type OrderStatus,
 } from '../../types/orders'
+
+const ORDER_TITLE_MAX_LENGTH = 45
 
 export function OrderCard({
   order,
@@ -22,14 +25,23 @@ export function OrderCard({
   isUpdating: boolean
 }) {
   const total = orderTotal(order.items)
+  const orderTitle = `Pedido de ${order.customerName}`
+  const displayTitle = truncateText(orderTitle, ORDER_TITLE_MAX_LENGTH)
 
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <header className="mb-3 space-y-2">
         <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Pedido de {order.customerName}
+            <h2
+              className="text-lg font-semibold text-gray-900"
+              title={
+                orderTitle.length > ORDER_TITLE_MAX_LENGTH
+                  ? orderTitle
+                  : undefined
+              }
+            >
+              {displayTitle}
             </h2>
             <span className="text-xs text-gray-400">
               ID do pedido: #{order.id}
