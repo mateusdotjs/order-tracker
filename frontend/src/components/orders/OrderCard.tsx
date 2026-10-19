@@ -52,7 +52,7 @@ export function OrderCard({
               to={`/orders/${order.id}`}
               className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
             >
-              Editar
+              Detalhes
             </Link>
             <StatusBadge status={order.status} />
             <time
