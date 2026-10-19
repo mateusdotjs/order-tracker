@@ -1,14 +1,20 @@
 import { useState, type SubmitEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { ApiError } from '../api/client'
+import { FieldError } from '../components/FieldError'
+import { FormGeneralError } from '../components/FormGeneralError'
 import { AddressFields } from '../components/orders/AddressFields'
 import {
   OrderItemsForm,
-  fieldError,
   newItem,
   type FormItem,
 } from '../components/orders/OrderItemsForm'
 import { useCreateOrder } from '../hooks/orders'
+import {
+  itemFieldErrorKeys,
+  resolveFieldError,
+  withoutFieldErrors,
+} from '../lib/fieldErrors'
 import type { Address } from '../types/orders'
 
 export function NewOrderPage() {
@@ -29,6 +35,7 @@ export function NewOrderPage() {
 
   function updateAddressField(field: keyof Address, value: string) {
     setAddress((prev) => ({ ...prev, [field]: value }))
+    setFieldErrors((prev) => withoutFieldErrors(prev, `address.${field}`))
   }
 
   function updateItem(
@@ -38,6 +45,9 @@ export function NewOrderPage() {
   ) {
     setItems((prev) =>
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+    )
+    setFieldErrors((prev) =>
+      withoutFieldErrors(prev, ...itemFieldErrorKeys(index, field)),
     )
   }
 
@@ -50,6 +60,11 @@ export function NewOrderPage() {
       return
     }
     setItems((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function handleCustomerNameChange(value: string) {
+    setCustomerName(value)
+    setFieldErrors((prev) => withoutFieldErrors(prev, 'customerName'))
   }
 
   function handleSubmit(event: SubmitEvent): void {
@@ -103,12 +118,6 @@ export function NewOrderPage() {
 
       <main className="mx-auto max-w-lg px-4 py-6">
         <div className="rounded-lg bg-white p-6 shadow-sm">
-          {generalError ? (
-            <p className="mb-4 text-sm text-red-600" role="alert">
-              {generalError}
-            </p>
-          ) : null}
-
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label
@@ -122,14 +131,12 @@ export function NewOrderPage() {
                 type="text"
                 required
                 value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                onChange={(e) => handleCustomerNameChange(e.target.value)}
                 className={inputClass}
               />
-              {fieldError(fieldErrors, 'customerName') ? (
-                <p className="mt-1 text-sm text-red-600">
-                  {fieldError(fieldErrors, 'customerName')}
-                </p>
-              ) : null}
+              <FieldError
+                message={resolveFieldError(fieldErrors, 'customerName')}
+              />
             </div>
 
             <AddressFields
@@ -147,6 +154,8 @@ export function NewOrderPage() {
               onRemove={removeItem}
               onItemChange={updateItem}
             />
+
+            <FormGeneralError message={generalError} />
 
             <button
               type="submit"

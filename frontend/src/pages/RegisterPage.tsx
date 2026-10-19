@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { register } from '../api/auth'
 import { ApiError } from '../api/client'
 import { RegisterForm } from '../components/auth/RegisterForm'
+import { withoutFieldErrors } from '../lib/fieldErrors'
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -44,6 +45,21 @@ export function RegisterPage() {
     mutation.mutate({ name, email, password })
   }
 
+  function handleNameChange(value: string) {
+    setName(value)
+    setFieldErrors((prev) => withoutFieldErrors(prev, 'name'))
+  }
+
+  function handleEmailChange(value: string) {
+    setEmail(value)
+    setFieldErrors((prev) => withoutFieldErrors(prev, 'email'))
+  }
+
+  function handlePasswordChange(value: string) {
+    setPassword(value)
+    setFieldErrors((prev) => withoutFieldErrors(prev, 'password'))
+  }
+
   return (
     <RegisterForm
       name={name}
@@ -52,9 +68,9 @@ export function RegisterPage() {
       generalError={generalError}
       fieldErrors={fieldErrors}
       isPending={mutation.isPending}
-      onNameChange={setName}
-      onEmailChange={setEmail}
-      onPasswordChange={setPassword}
+      onNameChange={handleNameChange}
+      onEmailChange={handleEmailChange}
+      onPasswordChange={handlePasswordChange}
       onSubmit={handleSubmit}
     />
   )

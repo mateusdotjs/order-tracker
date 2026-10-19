@@ -1,0 +1,32 @@
+export function resolveFieldError(
+  errors: Record<string, string>,
+  ...keys: string[]
+): string | undefined {
+  for (const key of keys) {
+    if (errors[key]) {
+      return errors[key]
+    }
+  }
+  return undefined
+}
+
+export function withoutFieldErrors(
+  errors: Record<string, string>,
+  ...keys: string[]
+): Record<string, string> {
+  if (keys.length === 0) {
+    return errors
+  }
+  const next = { ...errors }
+  for (const key of keys) {
+    delete next[key]
+  }
+  return next
+}
+
+export function itemFieldErrorKeys(
+  index: number,
+  field: 'name' | 'quantity' | 'price',
+): [string, string] {
+  return [`items[${index}].${field}`, `items.${index}.${field}`]
+}

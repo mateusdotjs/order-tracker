@@ -1,5 +1,7 @@
 import type { FormEvent } from 'react'
 import { Link } from 'react-router'
+import { FieldError } from '../FieldError'
+import { FormGeneralError } from '../FormGeneralError'
 
 type LoginFormProps = {
   email: string
@@ -37,12 +39,6 @@ export function LoginForm({
           </p>
         ) : null}
 
-        {generalError ? (
-          <p className="mb-4 text-sm text-red-600" role="alert">
-            {generalError}
-          </p>
-        ) : null}
-
         <form className="space-y-4" onSubmit={onSubmit} noValidate>
           <div>
             <label htmlFor="email" className="mb-1 block text-sm text-gray-700">
@@ -57,9 +53,7 @@ export function LoginForm({
               onChange={(e) => onEmailChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {fieldErrors.email ? (
-              <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
-            ) : null}
+            <FieldError message={fieldErrors.email} />
           </div>
 
           <div>
@@ -79,10 +73,10 @@ export function LoginForm({
               onChange={(e) => onPasswordChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {fieldErrors.password ? (
-              <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>
-            ) : null}
+            <FieldError message={fieldErrors.password} />
           </div>
+
+          <FormGeneralError message={generalError} />
 
           <button
             type="submit"

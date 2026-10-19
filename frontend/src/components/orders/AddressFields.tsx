@@ -1,5 +1,6 @@
+import { FieldError } from '../FieldError'
+import { resolveFieldError } from '../../lib/fieldErrors'
 import type { Address } from '../../types/orders'
-import { fieldError } from './OrderItemsForm'
 
 type AddressFieldsProps = {
   address: Address
@@ -31,11 +32,9 @@ export function AddressFields({
           onChange={(e) => updateAddressField('street', e.target.value)}
           className={inputClass}
         />
-        {fieldError(fieldErrors, 'address.street') ? (
-          <p className="mt-1 text-sm text-red-600">
-            {fieldError(fieldErrors, 'address.street')}
-          </p>
-        ) : null}
+        <FieldError
+          message={resolveFieldError(fieldErrors, 'address.street')}
+        />
       </div>
       <div>
         <label htmlFor="number" className="mb-1 block text-sm text-gray-700">
@@ -49,11 +48,9 @@ export function AddressFields({
           onChange={(e) => updateAddressField('number', e.target.value)}
           className={inputClass}
         />
-        {fieldError(fieldErrors, 'address.number') ? (
-          <p className="mt-1 text-sm text-red-600">
-            {fieldError(fieldErrors, 'address.number')}
-          </p>
-        ) : null}
+        <FieldError
+          message={resolveFieldError(fieldErrors, 'address.number')}
+        />
       </div>
       <div>
         <label htmlFor="city" className="mb-1 block text-sm text-gray-700">
@@ -67,11 +64,7 @@ export function AddressFields({
           onChange={(e) => updateAddressField('city', e.target.value)}
           className={inputClass}
         />
-        {fieldError(fieldErrors, 'address.city') ? (
-          <p className="mt-1 text-sm text-red-600">
-            {fieldError(fieldErrors, 'address.city')}
-          </p>
-        ) : null}
+        <FieldError message={resolveFieldError(fieldErrors, 'address.city')} />
       </div>
       <div>
         <label htmlFor="zip" className="mb-1 block text-sm text-gray-700">
@@ -85,11 +78,7 @@ export function AddressFields({
           onChange={(e) => updateAddressField('zip', e.target.value)}
           className={inputClass}
         />
-        {fieldError(fieldErrors, 'address.zip') ? (
-          <p className="mt-1 text-sm text-red-600">
-            {fieldError(fieldErrors, 'address.zip')}
-          </p>
-        ) : null}
+        <FieldError message={resolveFieldError(fieldErrors, 'address.zip')} />
       </div>
     </fieldset>
   )

@@ -1,3 +1,6 @@
+import { FieldError } from '../FieldError'
+import { itemFieldErrorKeys, resolveFieldError } from '../../lib/fieldErrors'
+
 export type FormItem = {
   clientKey: string
   name: string
@@ -12,18 +15,6 @@ export function newItem(): FormItem {
     quantity: '1',
     price: '',
   }
-}
-
-export function fieldError(
-  errors: Record<string, string>,
-  ...keys: string[]
-): string | undefined {
-  for (const key of keys) {
-    if (errors[key]) {
-      return errors[key]
-    }
-  }
-  return undefined
 }
 
 type OrderItemsFormProps = {
@@ -59,11 +50,10 @@ export function OrderItemsForm({
           Adicionar item
         </button>
       </div>
-      {fieldError(fieldErrors, 'items') ? (
-        <p className="mb-2 text-sm text-red-600">
-          {fieldError(fieldErrors, 'items')}
-        </p>
-      ) : null}
+      <FieldError
+        message={resolveFieldError(fieldErrors, 'items')}
+        className="mb-2 text-sm text-red-600"
+      />
       <ul className="space-y-4">
         {items.map((item, index) => (
           <li
@@ -100,19 +90,12 @@ export function OrderItemsForm({
                 }
                 className={inputClass}
               />
-              {fieldError(
-                fieldErrors,
-                `items[${index}].name`,
-                `items.${index}.name`,
-              ) ? (
-                <p className="mt-1 text-sm text-red-600">
-                  {fieldError(
-                    fieldErrors,
-                    `items[${index}].name`,
-                    `items.${index}.name`,
-                  )}
-                </p>
-              ) : null}
+              <FieldError
+                message={resolveFieldError(
+                  fieldErrors,
+                  ...itemFieldErrorKeys(index, 'name'),
+                )}
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -134,19 +117,12 @@ export function OrderItemsForm({
                   }
                   className={inputClass}
                 />
-                {fieldError(
-                  fieldErrors,
-                  `items[${index}].quantity`,
-                  `items.${index}.quantity`,
-                ) ? (
-                  <p className="mt-1 text-sm text-red-600">
-                    {fieldError(
-                      fieldErrors,
-                      `items[${index}].quantity`,
-                      `items.${index}.quantity`,
-                    )}
-                  </p>
-                ) : null}
+                <FieldError
+                  message={resolveFieldError(
+                    fieldErrors,
+                    ...itemFieldErrorKeys(index, 'quantity'),
+                  )}
+                />
               </div>
               <div>
                 <label
@@ -167,19 +143,12 @@ export function OrderItemsForm({
                   }
                   className={inputClass}
                 />
-                {fieldError(
-                  fieldErrors,
-                  `items[${index}].price`,
-                  `items.${index}.price`,
-                ) ? (
-                  <p className="mt-1 text-sm text-red-600">
-                    {fieldError(
-                      fieldErrors,
-                      `items[${index}].price`,
-                      `items.${index}.price`,
-                    )}
-                  </p>
-                ) : null}
+                <FieldError
+                  message={resolveFieldError(
+                    fieldErrors,
+                    ...itemFieldErrorKeys(index, 'price'),
+                  )}
+                />
               </div>
             </div>
           </li>

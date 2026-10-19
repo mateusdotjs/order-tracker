@@ -5,6 +5,7 @@ import { login } from '../api/auth'
 import { ApiError } from '../api/client'
 import { LoginForm } from '../components/auth/LoginForm'
 import { useAuth } from '../context/AuthContext'
+import { withoutFieldErrors } from '../lib/fieldErrors'
 
 type LocationState = {
   successMessage?: string
@@ -47,6 +48,16 @@ export function LoginPage() {
     mutation.mutate({ email, password })
   }
 
+  function handleEmailChange(value: string) {
+    setEmail(value)
+    setFieldErrors((prev) => withoutFieldErrors(prev, 'email'))
+  }
+
+  function handlePasswordChange(value: string) {
+    setPassword(value)
+    setFieldErrors((prev) => withoutFieldErrors(prev, 'password'))
+  }
+
   return (
     <LoginForm
       email={email}
@@ -55,8 +66,8 @@ export function LoginPage() {
       generalError={generalError}
       fieldErrors={fieldErrors}
       isPending={mutation.isPending}
-      onEmailChange={setEmail}
-      onPasswordChange={setPassword}
+      onEmailChange={handleEmailChange}
+      onPasswordChange={handlePasswordChange}
       onSubmit={handleSubmit}
     />
   )
