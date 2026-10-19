@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { login } from '../api/auth'
 import { ApiError, NetworkError } from '../api/client'
 import { LoginForm } from '../components/auth/LoginForm'
 import { NETWORK_ERROR_MESSAGE } from '../constants/errorMessages'
@@ -16,7 +15,7 @@ type LocationState = {
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login: saveToken } = useAuth()
+  const { login } = useAuth()
   const successMessage = (location.state as LocationState | null)?.successMessage
 
   const [email, setEmail] = useState('')
@@ -33,8 +32,7 @@ export function LoginPage() {
 
   const mutation = useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
-      saveToken(data.token)
+    onSuccess: () => {
       navigate('/', { replace: true })
     },
     onError: (error: Error) => {

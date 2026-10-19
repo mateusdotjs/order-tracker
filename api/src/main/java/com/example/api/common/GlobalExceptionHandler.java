@@ -53,9 +53,9 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
-		log.error("User not found for authenticated subject", ex);
-		return ResponseEntity.status(ErrorCode.INTERNAL_ERROR.getStatus())
-				.body(ErrorResponse.of(ErrorCode.INTERNAL_ERROR));
+		log.warn("User not found for authenticated subject: {}", ex.getMessage());
+		return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getStatus())
+				.body(ErrorResponse.of(ErrorCode.UNAUTHENTICATED));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)

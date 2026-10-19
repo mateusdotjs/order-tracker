@@ -1,5 +1,4 @@
 import { resolveErrorCode } from '../constants/errorMessages'
-import { readStoredToken } from '../context/tokenStorage'
 import {
   parseFieldErrors,
   type ApiErrorBody,
@@ -45,8 +44,25 @@ export type RequestOptions = {
   body?: unknown
 }
 
-function isLoginPath(path: string): boolean {
-  return path === '/auth/login' || path.endsWith('/auth/login')
+function normalizePath(path: string): string {
+  if (path.startsWith('http')) {
+    try {
+      return new URL(path).pathname
+    } catch {
+      return path
+    }
+  }
+  return path
+}
+
+function isAuthSessionPath(path: string): boolean {
+  const p = normalizePath(path)
+  return (
+    p === '/auth/login' ||
+    p === '/auth/register' ||
+    p === '/auth/logout' ||
+    p === '/auth/me'
+  )
 }
 
 export async function request<T>(
@@ -55,11 +71,6 @@ export async function request<T>(
 ): Promise<T> {
   const { method = 'GET', body } = options
   const headers: Record<string, string> = {}
-
-  const token = readStoredToken()
-  if (token) {
-    headers.Authorization = `Bearer ${token}`
-  }
 
   if (body !== undefined) {
     headers['Content-Type'] = 'application/json'
@@ -72,6 +83,7 @@ export async function request<T>(
     res = await fetch(url, {
       method,
       headers,
+      credentials: 'include',
       body: body !== undefined ? JSON.stringify(body) : undefined,
     })
   } catch {
@@ -94,7 +106,7 @@ export async function request<T>(
 
   if (!res.ok) {
     const errorBody = data as ApiErrorBody
-    if (res.status === 401 && !isLoginPath(path)) {
+    if (res.status === 401 && !isAuthSessionPath(path)) {
       onUnauthorized?.()
     }
     throw new ApiError(

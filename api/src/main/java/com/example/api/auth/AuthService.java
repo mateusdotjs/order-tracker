@@ -41,25 +41,29 @@ public class AuthService {
 		String passwordHash = passwordEncoder.encode(request.password());
 		User user = userRepository.save(new User(request.name(), email, passwordHash));
 
-		return new AuthResponse(user.getId(), user.getName(), user.getEmail(), null);
+		return toAuthResponse(user);
 	}
 
 	@Transactional(readOnly = true)
-	public AuthResponse login(LoginRequest request) {
+	public LoginSuccess login(LoginRequest request) {
 		String email = normalizeEmail(request.email());
 		User user = userRepository.findByEmail(email)
 				.filter(u -> passwordEncoder.matches(request.password(), u.getPasswordHash()))
 				.orElseThrow(InvalidCredentialsException::new);
 
 		String token = tokenService.generateToken(user);
-		return new AuthResponse(user.getId(), user.getName(), user.getEmail(), token);
+		return new LoginSuccess(toAuthResponse(user), token);
 	}
 
 	@Transactional(readOnly = true)
 	public AuthResponse me(Long userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundException(userId));
-		return new AuthResponse(user.getId(), user.getName(), user.getEmail(), null);
+		return toAuthResponse(user);
+	}
+
+	private static AuthResponse toAuthResponse(User user) {
+		return new AuthResponse(user.getId(), user.getName(), user.getEmail());
 	}
 
 	private static String normalizeEmail(String email) {

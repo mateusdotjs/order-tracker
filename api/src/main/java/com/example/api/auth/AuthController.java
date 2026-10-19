@@ -1,5 +1,6 @@
 package com.example.api.auth;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,9 +22,11 @@ import jakarta.validation.Valid;
 public class AuthController {
 
 	private final AuthService authService;
+	private final AccessTokenCookieHelper accessTokenCookieHelper;
 
-	public AuthController(AuthService authService) {
+	public AuthController(AuthService authService, AccessTokenCookieHelper accessTokenCookieHelper) {
 		this.authService = authService;
+		this.accessTokenCookieHelper = accessTokenCookieHelper;
 	}
 
 	@PostMapping("/register")
@@ -34,8 +37,17 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-		AuthResponse response = authService.login(request);
-		return ResponseEntity.ok(response);
+		LoginSuccess success = authService.login(request);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, accessTokenCookieHelper.buildSetCookie(success.accessToken()).toString())
+				.body(success.user());
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		return ResponseEntity.noContent()
+				.header(HttpHeaders.SET_COOKIE, accessTokenCookieHelper.buildClearCookie().toString())
+				.build();
 	}
 
 	@GetMapping("/me")
