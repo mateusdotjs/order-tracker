@@ -1,0 +1,33 @@
+---
+description: Stack, auth, erros e estrutura do front React
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Front-end (`frontend/`)
+
+- Vite + React + TypeScript, React Router, TanStack Query, Tailwind CSS, `fetch` nativo.
+- **Não usar:** Zod, react-hook-form, axios, biblioteca de componentes UI.
+- Tipos sem `any`; componentes funcionais.
+
+## Sessão e API
+
+- Cookie HttpOnly: JS **não** lê nem guarda token. `fetch` com `credentials: "include"`.
+- Base URL: `VITE_API_URL` (padrão `http://localhost:8080`).
+- `AuthContext` + `useQuery(['me'])` em `GET /auth/me` (`retry: false`).
+- 401 em `/auth/me` → não logado (sem loop de redirect).
+- 401 em outras rotas (exceto login/register/logout/me) → limpar cache TanStack Query e ir para `/login`.
+- Cliente HTTP: [frontend/src/api/client.ts](frontend/src/api/client.ts).
+
+## Estrutura por feature
+
+- `pages/`, `components/auth/`, `components/orders/`, `api/`, `hooks/`, `context/`, `constants/`, `types/`, `lib/`.
+- Validação de formulário: atributos HTML; erros por campo vindos do back (`FieldError`, códigos).
+
+## Erros (UI)
+
+- **Nunca** exibir `message` da API ao usuário.
+- Tradução pt-BR: [frontend/src/constants/errorMessages.ts](frontend/src/constants/errorMessages.ts) (`getErrorMessage`, `getFieldErrorMessage`).
+- Tipos: [frontend/src/types/errors.ts](frontend/src/types/errors.ts).
+- `ApiError` com `code` e `errors`; fallbacks por status/rede no client.
+- `FormGeneralError` / `FieldError` recebem códigos e traduzem localmente.

@@ -1,0 +1,27 @@
+---
+description: Preferência do maintainer — não rodar terminal/git sem pedido explícito
+alwaysApply: true
+---
+
+# Não executar comandos por conta própria
+
+- NÃO execute comandos no terminal, a menos que o usuário peça explicitamente
+  ("rode", "execute", "suba", "instale", etc.).
+- Isso inclui: subir a aplicação, rodar `curl`, `npm run dev`, `./mvnw spring-boot:run`,
+  instalar dependências, rodar build, lint ou qualquer outro comando de teste.
+- Também não faça commits, nem `git add`, `git reset` ou qualquer comando git que altere
+  estado, a menos que o usuário peça.
+- Não apague arquivos ou pastas (ex.: `api/data/`) por conta própria, a menos que o usuário peça explicitamente.
+
+## Quando algo precisar ser executado
+
+Não execute. Em vez disso, avise o usuário no final da resposta:
+
+1. Diga qual comando precisa ser rodado.
+2. Explique em uma linha por que é necessário.
+3. Deixe o comando pronto para copiar, em um bloco de código.
+
+## Validação sem executar
+
+Valide o trabalho lendo o código e conferindo imports, tipos e consistência.
+Liste ao final os cenários que o usuário deve testar manualmente.

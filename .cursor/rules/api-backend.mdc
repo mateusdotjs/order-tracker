@@ -1,0 +1,66 @@
+---
+description: Stack, organização, domínio, auth e erros da API Spring
+globs: api/**/*
+alwaysApply: false
+---
+
+# Back-end (`api/`)
+
+- Java 25, Spring Boot 4.x, Maven. Pacote raiz: `com.example.api`.
+- Spring Web, Spring Data JPA, Spring Security, Validation, H2.
+- Sem Lombok, sem jjwt, sem filtro JWT customizado.
+
+## Persistência (dev)
+
+- H2 em arquivo: `jdbc:h2:file:./data/orders`, `ddl-auto=update`, `open-in-view=false`.
+- Pasta `api/data/` é local, descartável, no `.gitignore`. Motivação: DECISIONS 004.
+- Console H2 em dev: `/h2-console`.
+
+## Auth
+
+- JWT stateless via `oauth2-resource-server` (NimbusJwtEncoder/JwtDecoder, HS256). Subject = id do usuário.
+- Segredo: `app.jwt.secret` ← `JWT_SECRET` (`.env` opcional). Expiração: `app.jwt.expiration-minutes`.
+- Login define cookie HttpOnly `access_token` (`AccessTokenCookieHelper`: SameSite=Strict, Path=/, Secure=`COOKIE_SECURE`).
+- JWT lido do cookie (`CookieBearerTokenResolver`); header `Authorization` ignorado. Em rotas públicas de auth, cookie inválido não bloqueia login/logout.
+- Senha: BCrypt. CSRF desabilitado; sessão STATELESS. CORS: `allowCredentials(true)`, origem `http://localhost:5173`, header `Content-Type`.
+- Motivação cookie: DECISIONS 003.
+
+### Endpoints auth
+
+- Públicos: `POST /auth/register`, `/login`, `/logout`.
+- Autenticados: `GET /auth/me` e demais rotas.
+- Login/registro: corpo `{ id, name, email }` (sem token). Logout: 204 e limpa cookie.
+
+## Organização (package by feature)
+
+Módulos: `users`, `auth`, `orders`, `config`, `common`.
+
+- Arquivos soltos no módulo (controller, service, repository, entidades). **Sem** subpastas `controller/` ou `service/`.
+- Subpastas permitidas: `dto/`, `exceptions/`.
+- DTOs: `record`s; `...Request` / `...Response`; aninhados como records dentro do principal.
+- Exceptions do módulo em `exceptions/`; `common/GlobalExceptionHandler` traduz para HTTP.
+- Controller sem regra de negócio; nunca expõe entidade. Service não conhece HTTP. Entidade → DTO no service.
+
+## Erros (API)
+
+JSON:
+
+- Geral: `{"code": "ORDER_NOT_FOUND", "message": "..."}`
+- Validação: `{"code": "VALIDATION_FAILED", "message": "...", "errors": {"email": "REQUIRED", ...}}`
+
+- `code` estável (front usa); `message` em inglês só para logs/debug.
+- `errors`: códigos de campo (`REQUIRED`, `INVALID_EMAIL`, …), não texto livre.
+- Fonte única: enums `ErrorCode` e `FieldErrorCode` em `common/` → `ErrorResponse`.
+- 401 Spring Security: `UNAUTHENTICATED` via `SecurityConfig`.
+- Erro novo → enum no back **e** [frontend/src/constants/errorMessages.ts](frontend/src/constants/errorMessages.ts) + [frontend/src/types/errors.ts](frontend/src/types/errors.ts).
+
+## Domínio
+
+- `Order`: customerName, address (`@Embedded`), items (`@OneToMany` cascade ALL), status, createdAt, owner (`@ManyToOne` User).
+- `OrderStatus`: RECEBIDO, EM_PREPARO, SAIU_PARA_ENTREGA, ENTREGUE, CANCELADO. Novo pedido: RECEBIDO.
+- Status: qualquer valor do enum; **sem** máquina de estados.
+- Dono sempre do token, nunca do body.
+
+### Endpoints pedidos
+
+- `POST /orders`, `GET /orders`, `GET /orders/{id}`, `PATCH /orders/{id}/status`. Sem DELETE nem PUT.

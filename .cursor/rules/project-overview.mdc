@@ -1,0 +1,25 @@
+---
+description: Visão geral do monorepo, escopo, documentação e idioma
+alwaysApply: true
+---
+
+# Mini Rastreador de Pedidos
+
+Desafio técnico: rastreamento simplificado de pedidos de delivery. Monorepo com `api/` (Spring Boot) e `frontend/` (Vite + React).
+
+## Documentação do repositório
+
+- [README.md](README.md) — subir API e front, variáveis de ambiente, estrutura de pastas.
+- [DECISIONS.md](DECISIONS.md) — o que foi feito e **por quê** (testes, JWT em cookie, H2, concorrência). Decisão arquitetural nova → **ADR numerado** em `DECISIONS.md`, não só código ou comentário.
+
+## Escopo (não expandir sem combinar)
+
+- Auth + pedidos: criar, listar, detalhe, atualizar status; pedido ligado ao usuário do token (404 se inexistente ou de outro dono).
+- Sem roles, refresh token, paginação, filtros, recuperação de senha, DELETE/PUT de pedidos.
+- Sem regras de transição entre status; sem controle de concorrência (ver DECISIONS 002).
+- Testes automatizados **só na API** (unitários + slice WebMvc); sem integração full-stack por padrão (DECISIONS 001).
+- Mudanças mínimas e cirúrgicas; manter o estilo existente. Comentários só onde não for óbvio.
+
+## Comunicação
+
+- Responder em **português** (pt-BR).

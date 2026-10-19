@@ -1,0 +1,45 @@
+---
+description: Sempre sugerir uma mensagem de Conventional Commit no final de cada demanda
+alwaysApply: true
+---
+
+# Sugestão de commit ao final de cada demanda
+
+Ao terminar qualquer demanda que alterou arquivos, finalize a resposta com uma mensagem
+de commit sugerida no padrão Conventional Commits. Apenas sugira: nunca execute o commit.
+
+## Formato
+
+```
+tipo: descrição
+```
+
+- Minúsculas, verbo no imperativo (`add`, `fix`, `configure`), sem ponto final.
+- Descrição curta, idealmente até 72 caracteres.
+- Escopo opcional, usando o nome do módulo ou da área (`orders`, `auth`, `users`,
+  `common`, `config`, `api`, `frontend`).
+
+## Tipos
+
+- `feat`: nova funcionalidade
+- `fix`: correção de bug
+- `refactor`: mudança de código sem alterar comportamento
+- `chore`: infraestrutura, configuração, dependências
+- `docs`: documentação
+- `test`: testes (sem mudança de produção)
+- `style`: formatação ou estilo visual sem mudança de lógica
+
+## Regras
+
+- Um commit por mudança lógica. Se a demanda misturou assuntos diferentes, sugira
+  mais de uma mensagem e indique quais arquivos entram em cada uma.
+- Apresente a sugestão sempre na última seção da resposta, em um bloco de código,
+  com o título "Commit sugerido".
+
+## Exemplo
+
+Commit sugerido:
+
+```
+fix: restrict orders to their owner
+```

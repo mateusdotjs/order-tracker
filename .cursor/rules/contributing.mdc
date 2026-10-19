@@ -1,0 +1,44 @@
+---
+description: Guia para colaboradores e agentes (checklist, docs, limites)
+alwaysApply: true
+---
+
+# Colaboração neste repositório
+
+## Antes de implementar
+
+1. Ler [README.md](README.md) para rodar o projeto e [DECISIONS.md](DECISIONS.md) para restrições já assumidas.
+2. Confirmar que a mudança cabe no **escopo** (ver `project-overview`). Funcionalidade extra ou integração pesada → combinar antes.
+
+## Checklist comum
+
+| Mudança | Ação |
+|--------|------|
+| Novo `ErrorCode` / `FieldErrorCode` | Enum em `api/.../common/` + `errorMessages.ts` + `errors.ts` |
+| Auth, cookie, CORS, JWT | Conferir DECISIONS 003; não expor token no JSON |
+| Persistência / banco dev | DECISIONS 004; não versionar `api/data/` |
+| Comportamento de service ou controller | Teste unitário ou `@WebMvcTest` correspondente |
+| Escolha arquitetural relevante | Nova seção numerada em `DECISIONS.md` |
+| Só documentação de uso | `README.md`; decisões de desenho → `DECISIONS.md` |
+
+## Dependências e estilo
+
+- Não introduzir Lombok, jjwt, axios, Zod, react-hook-form ou UI kit sem necessidade explícita.
+- Back-end: package by feature, DTOs como records, sem subpastas `controller/`/`service/`.
+- Front-end: Tailwind + componentes existentes; mensagens de erro sempre via códigos traduzidos.
+
+## Comandos úteis (rodar localmente; agente só se o usuário pedir)
+
+```bash
+cd api && ./mvnw test
+cd api && ./mvnw spring-boot:run
+cd frontend && npm install && npm run dev
+```
+
+Subir **API antes** do front. Detalhes de env: README.
+
+## Revisão manual sugerida
+
+- Fluxo login → criar pedido → listar → detalhe → mudar status → logout.
+- Pedido de outro usuário: 404.
+- Formulários: erros de campo em pt-BR, sem texto cru da API.

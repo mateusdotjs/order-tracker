@@ -1,0 +1,30 @@
+---
+description: Estratégia de testes da API (unit, WebMvc slice, H2 de teste)
+globs: api/src/test/**/*
+alwaysApply: false
+---
+
+# Testes da API
+
+Alinhado a [DECISIONS.md](DECISIONS.md) (001). `./mvnw test` usa config em `api/src/test/resources/application.properties` (H2 **in-memory**, `ddl-auto=create-drop`) — **nunca** `api/data/` de dev.
+
+## O que manter
+
+- **Unitários** (Mockito): serviços (`AuthService`, `OrderService`), helpers (`AccessTokenCookieHelper`, `CookieBearerTokenResolver`, `TokenService`, etc.).
+- **Slice web** (`@WebMvcTest`): controllers de auth e orders; serviços mockados; contrato JSON, status HTTP, validação, `GlobalExceptionHandler`.
+- **Smoke**: `@SpringBootTest` com `contextLoads` apenas.
+
+## O que não adicionar por padrão
+
+- Testes de integração HTTP + JPA persistindo no disco.
+- `@DataJpaTest` ou Testcontainers — só se escopo do projeto mudar (ver “Como faria depois” no DECISIONS 001).
+
+## Ao alterar código
+
+- Mudou regra de negócio → unitário do service.
+- Mudou rota, status, corpo de erro ou segurança → WebMvc do controller afetado.
+- Não dependa de ordem entre testes nem de estado em `api/data/`.
+
+## Cobertura
+
+- JaCoCo no `verify` (`api/pom.xml`); relatório em `api/target/site/jacoco/`. DTOs e `ApiApplication` excluídos — foco em lógica e web.
