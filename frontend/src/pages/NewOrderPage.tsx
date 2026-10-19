@@ -1,0 +1,163 @@
+import { useState, type SubmitEvent } from 'react'
+import { Link, useNavigate } from 'react-router'
+import { ApiError } from '../api/client'
+import { AddressFields } from '../components/orders/AddressFields'
+import {
+  OrderItemsForm,
+  fieldError,
+  newItem,
+  type FormItem,
+} from '../components/orders/OrderItemsForm'
+import { useCreateOrder } from '../hooks/orders'
+import type { Address } from '../types/orders'
+
+export function NewOrderPage() {
+  const navigate = useNavigate()
+
+  const [customerName, setCustomerName] = useState('')
+  const [address, setAddress] = useState<Address>({
+    street: '',
+    number: '',
+    city: '',
+    zip: '',
+  })
+  const [items, setItems] = useState<FormItem[]>([newItem()])
+  const [generalError, setGeneralError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  const mutation = useCreateOrder()
+
+  function updateAddressField(field: keyof Address, value: string) {
+    setAddress((prev) => ({ ...prev, [field]: value }))
+  }
+
+  function updateItem(
+    index: number,
+    field: 'name' | 'quantity' | 'price',
+    value: string,
+  ) {
+    setItems((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+    )
+  }
+
+  function addItem() {
+    setItems((prev) => [...prev, newItem()])
+  }
+
+  function removeItem(index: number) {
+    if (items.length <= 1) {
+      return
+    }
+    setItems((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function handleSubmit(event: SubmitEvent): void {
+    event.preventDefault()
+    setGeneralError(null)
+    setFieldErrors({})
+
+    mutation.mutate(
+      {
+        customerName,
+        address,
+        items: items.map((item) => ({
+          name: item.name,
+          quantity: Number(item.quantity),
+          price: Number(item.price),
+        })),
+      },
+      {
+        onSuccess: () => {
+          navigate('/', { replace: true })
+        },
+        onError: (error: Error) => {
+          setFieldErrors({})
+          if (error instanceof ApiError) {
+            setGeneralError(error.message)
+            if (error.errors) {
+              setFieldErrors(error.errors)
+            }
+            return
+          }
+          setGeneralError('Não foi possível criar o pedido. Tente novamente.')
+        },
+      },
+    )
+  }
+
+  const inputClass =
+    'w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+        <h1 className="text-xl font-semibold text-gray-900">Novo pedido</h1>
+        <Link
+          to="/"
+          className="rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+        >
+          Voltar
+        </Link>
+      </header>
+
+      <main className="mx-auto max-w-lg px-4 py-6">
+        <div className="rounded-lg bg-white p-6 shadow-sm">
+          {generalError ? (
+            <p className="mb-4 text-sm text-red-600" role="alert">
+              {generalError}
+            </p>
+          ) : null}
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="customerName"
+                className="mb-1 block text-sm text-gray-700"
+              >
+                Cliente
+              </label>
+              <input
+                id="customerName"
+                type="text"
+                required
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className={inputClass}
+              />
+              {fieldError(fieldErrors, 'customerName') ? (
+                <p className="mt-1 text-sm text-red-600">
+                  {fieldError(fieldErrors, 'customerName')}
+                </p>
+              ) : null}
+            </div>
+
+            <AddressFields
+              address={address}
+              fieldErrors={fieldErrors}
+              inputClass={inputClass}
+              onFieldChange={updateAddressField}
+            />
+
+            <OrderItemsForm
+              items={items}
+              fieldErrors={fieldErrors}
+              inputClass={inputClass}
+              onAdd={addItem}
+              onRemove={removeItem}
+              onItemChange={updateItem}
+            />
+
+            <button
+              type="submit"
+              disabled={mutation.isPending}
+              className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {mutation.isPending ? 'Salvando…' : 'Criar pedido'}
+            </button>
+          </form>
+        </div>
+      </main>
+    </div>
+  )
+}

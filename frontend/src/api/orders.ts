@@ -1,10 +1,10 @@
-import { request } from '../api/client'
+import { request } from './client'
 import type {
   CreateOrderPayload,
   Order,
   OrderStatus,
   UpdateOrderStatusPayload,
-} from './types'
+} from '../types/orders'
 
 export function fetchOrders(): Promise<Order[]> {
   return request<Order[]>('/orders')

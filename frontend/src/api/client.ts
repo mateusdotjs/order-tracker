@@ -1,4 +1,4 @@
-import { readStoredToken } from '../auth/tokenStorage'
+import { readStoredToken } from '../context/tokenStorage'
 
 export type ApiErrorBody = {
   message?: string

@@ -1,48 +1,31 @@
-import { useMutation } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
-import { ApiError } from '../api/client'
-import { register } from './api'
+import type { FormEvent } from 'react'
+import { Link } from 'react-router'
 
-export function RegisterPage() {
-  const navigate = useNavigate()
+type RegisterFormProps = {
+  name: string
+  email: string
+  password: string
+  generalError: string | null
+  fieldErrors: Record<string, string>
+  isPending: boolean
+  onNameChange: (value: string) => void
+  onEmailChange: (value: string) => void
+  onPasswordChange: (value: string) => void
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void
+}
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [generalError, setGeneralError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
-
-  const mutation = useMutation({
-    mutationFn: register,
-    onSuccess: () => {
-      navigate('/login', {
-        replace: true,
-        state: {
-          successMessage: 'Cadastro realizado com sucesso. Faça login.',
-        },
-      })
-    },
-    onError: (error: Error) => {
-      setFieldErrors({})
-      if (error instanceof ApiError) {
-        setGeneralError(error.message)
-        if (error.errors) {
-          setFieldErrors(error.errors)
-        }
-        return
-      }
-      setGeneralError('Não foi possível cadastrar. Tente novamente.')
-    },
-  })
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setGeneralError(null)
-    setFieldErrors({})
-    mutation.mutate({ name, email, password })
-  }
-
+export function RegisterForm({
+  name,
+  email,
+  password,
+  generalError,
+  fieldErrors,
+  isPending,
+  onNameChange,
+  onEmailChange,
+  onPasswordChange,
+  onSubmit,
+}: RegisterFormProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow">
@@ -56,7 +39,7 @@ export function RegisterPage() {
           </p>
         ) : null}
 
-        <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+        <form className="space-y-4" onSubmit={onSubmit} noValidate>
           <div>
             <label htmlFor="name" className="mb-1 block text-sm text-gray-700">
               Nome
@@ -67,7 +50,7 @@ export function RegisterPage() {
               required
               autoComplete="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => onNameChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {fieldErrors.name ? (
@@ -85,7 +68,7 @@ export function RegisterPage() {
               required
               autoComplete="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => onEmailChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {fieldErrors.email ? (
@@ -107,7 +90,7 @@ export function RegisterPage() {
               minLength={6}
               autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => onPasswordChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {fieldErrors.password ? (
@@ -117,10 +100,10 @@ export function RegisterPage() {
 
           <button
             type="submit"
-            disabled={mutation.isPending}
+            disabled={isPending}
             className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            {mutation.isPending ? 'Cadastrando…' : 'Cadastrar'}
+            {isPending ? 'Cadastrando…' : 'Cadastrar'}
           </button>
         </form>
 

@@ -1,5 +1,5 @@
-import type { OrderStatus } from './types'
-import { statusLabel } from './types'
+import type { OrderStatus } from '../../types/orders'
+import { statusLabel } from '../../types/orders'
 
 const statusStyles: Record<OrderStatus, string> = {
   RECEBIDO: 'bg-gray-100 text-gray-800',

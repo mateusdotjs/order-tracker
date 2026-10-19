@@ -4,8 +4,8 @@ import {
   fetchOrders,
   updateOrderStatus,
   type UpdateStatusArgs,
-} from './api'
-import type { CreateOrderPayload, Order } from './types'
+} from '../api/orders'
+import type { CreateOrderPayload, Order } from '../types/orders'
 
 export const ordersQueryKey = ['orders'] as const
 

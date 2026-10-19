@@ -1,10 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router'
-import { GuestRoute } from './auth/GuestRoute'
-import { LoginPage } from './auth/LoginPage'
-import { ProtectedRoute } from './auth/ProtectedRoute'
-import { RegisterPage } from './auth/RegisterPage'
-import { NewOrderPage } from './orders/NewOrderPage'
-import { OrdersPage } from './orders/OrdersPage'
+import { GuestRoute } from './components/auth/GuestRoute'
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { LoginPage } from './pages/LoginPage'
+import { NewOrderPage } from './pages/NewOrderPage'
+import { OrdersPage } from './pages/OrdersPage'
+import { RegisterPage } from './pages/RegisterPage'
 
 export default function App() {
   return (

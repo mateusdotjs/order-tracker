@@ -1,51 +1,29 @@
-import { useMutation } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
-import { ApiError } from '../api/client'
-import { useAuth } from './AuthContext'
-import { login } from './api'
+import type { FormEvent } from 'react'
+import { Link } from 'react-router'
 
-type LocationState = {
+type LoginFormProps = {
+  email: string
+  password: string
   successMessage?: string
+  generalError: string | null
+  fieldErrors: Record<string, string>
+  isPending: boolean
+  onEmailChange: (value: string) => void
+  onPasswordChange: (value: string) => void
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void
 }
 
-export function LoginPage() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { login: saveToken } = useAuth()
-  const successMessage = (location.state as LocationState | null)?.successMessage
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [generalError, setGeneralError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
-
-  const mutation = useMutation({
-    mutationFn: login,
-    onSuccess: (data) => {
-      saveToken(data.token)
-      navigate('/', { replace: true })
-    },
-    onError: (error: Error) => {
-      setFieldErrors({})
-      if (error instanceof ApiError) {
-        setGeneralError(error.message)
-        if (error.errors) {
-          setFieldErrors(error.errors)
-        }
-        return
-      }
-      setGeneralError('Não foi possível entrar. Tente novamente.')
-    },
-  })
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setGeneralError(null)
-    setFieldErrors({})
-    mutation.mutate({ email, password })
-  }
-
+export function LoginForm({
+  email,
+  password,
+  successMessage,
+  generalError,
+  fieldErrors,
+  isPending,
+  onEmailChange,
+  onPasswordChange,
+  onSubmit,
+}: LoginFormProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow">
@@ -65,7 +43,7 @@ export function LoginPage() {
           </p>
         ) : null}
 
-        <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+        <form className="space-y-4" onSubmit={onSubmit} noValidate>
           <div>
             <label htmlFor="email" className="mb-1 block text-sm text-gray-700">
               E-mail
@@ -76,7 +54,7 @@ export function LoginPage() {
               required
               autoComplete="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => onEmailChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {fieldErrors.email ? (
@@ -98,7 +76,7 @@ export function LoginPage() {
               minLength={6}
               autoComplete="current-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => onPasswordChange(e.target.value)}
               className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {fieldErrors.password ? (
@@ -108,10 +86,10 @@ export function LoginPage() {
 
           <button
             type="submit"
-            disabled={mutation.isPending}
+            disabled={isPending}
             className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            {mutation.isPending ? 'Entrando…' : 'Entrar'}
+            {isPending ? 'Entrando…' : 'Entrar'}
           </button>
         </form>
 
