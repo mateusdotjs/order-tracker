@@ -48,7 +48,7 @@ export function OrdersPage() {
         <div className="flex items-center gap-3">
           <Link
             to="/orders/new"
-            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
           >
             Novo pedido
           </Link>

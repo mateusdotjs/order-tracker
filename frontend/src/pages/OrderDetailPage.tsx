@@ -35,7 +35,7 @@ function NotFoundContent() {
       </p>
       <Link
         to="/"
-        className="mt-4 inline-block text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+        className="mt-4 inline-block text-sm font-medium text-brand-600 hover:text-brand-800 hover:underline"
       >
         Voltar para pedidos
       </Link>

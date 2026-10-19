@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+  /* Tom coral / vermelho-claro (identidade Foody Delivery) */
+  --color-brand-100: #ffe8e9;
+  --color-brand-500: #ff5a5f;
+  --color-brand-600: #f05a5b;
+  --color-brand-700: #e04a4b;
+  --color-brand-800: #c73d3e;
+  --color-brand-900: #8f2a2b;
+}

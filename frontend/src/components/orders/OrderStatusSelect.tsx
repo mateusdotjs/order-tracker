@@ -30,7 +30,7 @@ export function OrderStatusSelect({
         onChange={(e) =>
           onChange(orderId, e.target.value as OrderStatus)
         }
-        className="rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        className="rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
       >
         {ORDER_STATUSES.map(({ value, label }) => (
           <option key={value} value={value}>

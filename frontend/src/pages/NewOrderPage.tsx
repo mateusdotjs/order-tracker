@@ -123,7 +123,7 @@ export function NewOrderPage() {
   }
 
   const inputClass =
-    'w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+    'w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -184,7 +184,7 @@ export function NewOrderPage() {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="w-full rounded bg-brand-600 px-4 py-2 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
             >
               {mutation.isPending ? 'Salvando…' : 'Criar pedido'}
             </button>

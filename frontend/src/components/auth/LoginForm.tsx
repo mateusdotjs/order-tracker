@@ -54,7 +54,7 @@ export function LoginForm({
               autoComplete="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
-              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             <FieldError code={fieldErrors.email} />
           </div>
@@ -73,7 +73,7 @@ export function LoginForm({
               autoComplete="current-password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
-              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             <FieldError code={fieldErrors.password} />
           </div>
@@ -86,7 +86,7 @@ export function LoginForm({
           <button
             type="submit"
             disabled={isPending}
-            className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded bg-brand-600 py-2 text-white hover:bg-brand-700 disabled:opacity-50"
           >
             {isPending ? 'Entrando…' : 'Entrar'}
           </button>
@@ -94,7 +94,7 @@ export function LoginForm({
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Não tem conta?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link to="/register" className="text-brand-600 hover:underline">
             Cadastre-se
           </Link>
         </p>

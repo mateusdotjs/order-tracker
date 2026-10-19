@@ -47,7 +47,7 @@ export function OrderItemsForm({
           type="button"
           disabled={items.length >= 50}
           onClick={addItem}
-          className="text-sm text-blue-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400"
+          className="text-sm text-brand-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400"
         >
           Adicionar item
         </button>

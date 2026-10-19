@@ -50,7 +50,7 @@ export function RegisterForm({
               autoComplete="name"
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
-              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             <FieldError code={fieldErrors.name} />
           </div>
@@ -66,7 +66,7 @@ export function RegisterForm({
               autoComplete="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
-              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             <FieldError code={fieldErrors.email} />
           </div>
@@ -85,7 +85,7 @@ export function RegisterForm({
               autoComplete="new-password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
-              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             <FieldError code={fieldErrors.password} />
           </div>
@@ -98,7 +98,7 @@ export function RegisterForm({
           <button
             type="submit"
             disabled={isPending}
-            className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded bg-brand-600 py-2 text-white hover:bg-brand-700 disabled:opacity-50"
           >
             {isPending ? 'Cadastrando…' : 'Cadastrar'}
           </button>
@@ -106,7 +106,7 @@ export function RegisterForm({
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Já tem conta?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-brand-600 hover:underline">
             Entrar
           </Link>
         </p>
