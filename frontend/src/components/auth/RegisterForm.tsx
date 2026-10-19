@@ -46,7 +46,7 @@ export function RegisterForm({
             <input
               id="name"
               type="text"
-              required
+              maxLength={100}
               autoComplete="name"
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
@@ -62,7 +62,7 @@ export function RegisterForm({
             <input
               id="email"
               type="email"
-              required
+              maxLength={150}
               autoComplete="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
@@ -81,8 +81,7 @@ export function RegisterForm({
             <input
               id="password"
               type="password"
-              required
-              minLength={6}
+              maxLength={50}
               autoComplete="new-password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}

@@ -6,16 +6,16 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class Address {
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 150)
 	private String street;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 20)
 	private String number;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 100)
 	private String city;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 20)
 	private String zip;
 
 	protected Address() {

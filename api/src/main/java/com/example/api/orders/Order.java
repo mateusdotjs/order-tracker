@@ -33,7 +33,7 @@ public class Order {
 	@JoinColumn(name = "owner_id", nullable = false)
 	private User owner;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 100)
 	private String customerName;
 
 	@Embedded

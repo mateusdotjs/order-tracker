@@ -19,13 +19,13 @@ public class OrderItem {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 100)
 	private String name;
 
 	@Column(nullable = false)
 	private int quantity;
 
-	@Column(nullable = false)
+	@Column(nullable = false, precision = 7, scale = 2)
 	private BigDecimal price;
 
 	@ManyToOne(optional = false)

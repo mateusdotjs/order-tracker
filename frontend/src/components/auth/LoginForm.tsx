@@ -50,7 +50,7 @@ export function LoginForm({
             <input
               id="email"
               type="email"
-              required
+              maxLength={150}
               autoComplete="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
@@ -69,8 +69,7 @@ export function LoginForm({
             <input
               id="password"
               type="password"
-              required
-              minLength={6}
+              maxLength={50}
               autoComplete="current-password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}

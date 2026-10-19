@@ -28,7 +28,7 @@ export function AddressFields({
         <input
           id="street"
           type="text"
-          required
+          maxLength={150}
           value={address.street}
           onChange={(e) => updateAddressField('street', e.target.value)}
           className={inputClass}
@@ -44,7 +44,7 @@ export function AddressFields({
         <input
           id="number"
           type="text"
-          required
+          maxLength={20}
           value={address.number}
           onChange={(e) => updateAddressField('number', e.target.value)}
           className={inputClass}
@@ -60,7 +60,7 @@ export function AddressFields({
         <input
           id="city"
           type="text"
-          required
+          maxLength={100}
           value={address.city}
           onChange={(e) => updateAddressField('city', e.target.value)}
           className={inputClass}
@@ -74,7 +74,7 @@ export function AddressFields({
         <input
           id="zip"
           type="text"
-          required
+          maxLength={20}
           value={address.zip}
           onChange={(e) => updateAddressField('zip', e.target.value)}
           className={inputClass}

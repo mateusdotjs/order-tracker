@@ -45,8 +45,9 @@ export function OrderItemsForm({
         <span className="text-sm font-medium text-gray-700">Itens</span>
         <button
           type="button"
+          disabled={items.length >= 50}
           onClick={addItem}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-blue-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400"
         >
           Adicionar item
         </button>
@@ -84,7 +85,7 @@ export function OrderItemsForm({
               <input
                 id={`item-name-${index}`}
                 type="text"
-                required
+                maxLength={100}
                 value={item.name}
                 onChange={(e) =>
                   updateItem(index, 'name', e.target.value)
@@ -109,8 +110,6 @@ export function OrderItemsForm({
                 <input
                   id={`item-qty-${index}`}
                   type="number"
-                  required
-                  min={1}
                   step={1}
                   value={item.quantity}
                   onChange={(e) =>
@@ -135,8 +134,6 @@ export function OrderItemsForm({
                 <input
                   id={`item-price-${index}`}
                   type="number"
-                  required
-                  min={0.01}
                   step={0.01}
                   value={item.price}
                   onChange={(e) =>

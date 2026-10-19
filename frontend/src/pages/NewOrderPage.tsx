@@ -61,6 +61,9 @@ export function NewOrderPage() {
   }
 
   function addItem() {
+    if (items.length >= 50) {
+      return
+    }
     setItems((prev) => [...prev, newItem()])
   }
 
@@ -136,7 +139,7 @@ export function NewOrderPage() {
 
       <main className="mx-auto max-w-lg px-4 py-6">
         <div className="rounded-lg bg-white p-6 shadow-sm">
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
             <div>
               <label
                 htmlFor="customerName"
@@ -147,7 +150,7 @@ export function NewOrderPage() {
               <input
                 id="customerName"
                 type="text"
-                required
+                maxLength={100}
                 value={customerName}
                 onChange={(e) => handleCustomerNameChange(e.target.value)}
                 className={inputClass}
