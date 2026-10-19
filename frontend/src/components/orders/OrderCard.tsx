@@ -24,21 +24,26 @@ export function OrderCard({
 
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            Pedido #{order.id}
+      <header className="mb-3 space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <h2 className="min-w-0 flex-1 text-lg font-semibold text-gray-900">
+            Pedido de {order.customerName}
           </h2>
-          <p className="text-sm text-gray-600">{order.customerName}</p>
-          <p className="text-sm text-gray-500">
-            {formatAddressShort(order.address)} · CEP {order.address.zip}
-          </p>
+          <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
+            <span className="text-xs text-gray-400">ID do pedido: #{order.id}</span>
+            <StatusBadge status={order.status} />
+            <time
+              dateTime={order.createdAt}
+              className="whitespace-nowrap text-sm text-gray-500"
+            >
+              {formatDatePtBr(order.createdAt)}
+            </time>
+          </div>
         </div>
-        <div className="text-right text-sm text-gray-500">
-          <StatusBadge status={order.status} />
-          <p className="mt-1">{formatDatePtBr(order.createdAt)}</p>
-        </div>
-      </div>
+        <p className="text-sm text-gray-500">
+          {formatAddressShort(order.address)} · CEP {order.address.zip}
+        </p>
+      </header>
 
       <ul className="mb-3 space-y-1 text-sm text-gray-700">
         {order.items.map((item, index) => (
