@@ -32,7 +32,7 @@ Dois clientes podem, em tese, atualizar o mesmo pedido ao mesmo tempo. O enuncia
 
 ### Decisão
 
-Não implementei controle de concorrência: sem `@Version`, locks pessimistas ou filas. Cada pedido pertence a um usuário; o fluxo é CRUD simples com PATCH de status livre entre valores do enum.
+Não implementei controle de concorrência: sem `@Version`, locks pessimistas ou filas. Cada pedido pertence a um usuário; o fluxo é CRUD simples com PATCH de status livre entre valores do enum (regras de transição — ver **006**).
 
 Isso reflete o escopo do exercício, não uma aposta de que concorrência nunca importa em produção.
 
@@ -107,3 +107,27 @@ Zod no front daria feedback antes da rede, mas repetiria as mesmas regras já no
 ### Consequências
 
 Campo vazio ou e-mail inválido só aparece depois da resposta da API. Se o produto pedisse feedback instantâneo, um schema no cliente alinhado aos DTOs faria sentido; hoje isso ficaria de fora de propósito.
+
+---
+
+## 006 — Transição de status do pedido
+
+### Contexto
+
+O rastreador expõe `OrderStatus` (RECEBIDO, EM_PREPARO, SAIU_PARA_ENTREGA, ENTREGUE, CANCELADO) e permite alterar o status via PATCH. Em um fluxo real de delivery, nem toda mudança faz sentido (por exemplo, reabrir pedido já entregue ou cancelado).
+
+### Decisão
+
+Não há máquina de estados nem validação de transição: qualquer valor do enum aceito no PATCH substitui o status atual, desde que o pedido exista e pertença ao usuário autenticado.
+
+### Por quê
+
+O enunciado não exige regras de negócio sobre o ciclo do pedido. Manter o PATCH “livre” reduz código na API, testes e UI (sem matriz de transições, sem desabilitar opções no select por estado atual) e deixa o foco do exercício em auth, persistência e contrato HTTP.
+
+### Como faria depois
+
+No mínimo, tratar **CANCELADO** e **ENTREGUE** como estados terminais: recusar novo PATCH com 409 (ou 422) e um `ErrorCode` dedicado. Opcionalmente, grafo explícito de transições permitidas (ex.: RECEBIDO → EM_PREPARO ou CANCELADO, nunca ENTREGUE direto de RECEBIDO). O front espelharia isso desabilitando ou ocultando opções inválidas no detalhe do pedido.
+
+### Consequências
+
+É possível, hoje, “desfazer” cancelamento ou entrega só trocando o status na interface — comportamento irrealista, mas aceitável no escopo do mini rastreador. Evolução natural combina esta decisão com locking otimista (**002**) se vários operadores passarem a disputar o mesmo pedido.
