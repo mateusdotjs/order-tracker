@@ -83,3 +83,27 @@ Zero dependência extra para rodar o repo: não precisa instalar banco nem subir
 ### Consequências
 
 Não é escolha de produção (concorrência real, backup, migrações formais). Em prod usaria PostgreSQL (ou similar) com Flyway/Liquibase e perfis separados. Os testes automatizados **não** usam esse arquivo — ver **001**.
+
+---
+
+## 005 — Validação de formulário no front
+
+### Contexto
+
+Os formulários (login, cadastro, novo pedido) precisam avisar campo inválido. O HTML tem validação nativa (`required`, `type`, `min`, `pattern`): o navegador barra o submit e mostra o balão próprio, em geral no primeiro campo inválido. Outra opção seria um schema no cliente (Zod) espelhando Bean Validation antes do request.
+
+### Decisão
+
+A regra fica na API (Bean Validation nos DTOs). O front envia o formulário com `noValidate` e **não** usa atributos que disparam o balão nativo. A resposta 400 traz códigos por campo (`FieldErrorCode`); a UI traduz e mostra a mensagem embaixo do campo correspondente. Ao editar um campo, só o erro daquele campo some.
+
+`maxLength` nos inputs só limita a digitação ao tamanho do `@Size` da API. Não é a mensagem de erro.
+
+### Por quê
+
+O balão do navegador quebra o visual da tela e para no primeiro problema, então o usuário não vê todos os campos de uma vez. Mensagem própria, no estilo do restante da UI, lista cada campo inválido no mesmo submit.
+
+Zod no front daria feedback antes da rede, mas repetiria as mesmas regras já nos DTOs e nos códigos de erro. Para este exercício, uma fonte só — a API — basta e evita duas validações para manter alinhadas.
+
+### Consequências
+
+Campo vazio ou e-mail inválido só aparece depois da resposta da API. Se o produto pedisse feedback instantâneo, um schema no cliente alinhado aos DTOs faria sentido; hoje isso ficaria de fora de propósito.
